@@ -3,29 +3,39 @@ import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/model/story.dart';
 
 class EditStoryPage extends StatefulWidget {
+  const EditStoryPage({Story story}) : _story = story;
+  final Story _story;
+
   @override
   State<StatefulWidget> createState() {
-    return _EditStoryState();
+    return _EditStoryState(_story);
   }
 }
 
 class _EditStoryState extends State<EditStoryPage> {
-  String _title;
-  String _content;
-  // ignore: use_setters_to_change_properties
-  void _setTitle(String title) => _title = title;
-  void _setContent(String content) => _content = content;
+  _EditStoryState(Story story) : _story = story ?? Story();
+
+  final Story _story;
+  void _setTitle(String title) => _story.title = title;
+  void _setContent(String content) => _story.content = content;
+  void _setLocation(String location) => _story.location = location;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: Column(
+        child: ListView(
           children: <Widget>[
             TextField(
               onChanged: _setTitle,
             ),
             TextField(
               onChanged: _setContent,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+            ),
+            TextField(
+              onChanged: _setLocation,
             )
           ],
         ),
@@ -35,14 +45,14 @@ class _EditStoryState extends State<EditStoryPage> {
 
   @override
   void dispose() {
-    var story = Story(
-      title: _title,
-      content: _content,
-      createTime: DateTime.now().toIso8601String(),
-      updateTime: DateTime.now().toIso8601String(),
-    );
-
-    SqlProvider().insertStory(story);
+    save();
     super.dispose();
+  }
+
+  Future<void> save() async {
+    _story.updateTime = DateTime.now().toIso8601String();
+    _story.createTime ??= DateTime.now().toIso8601String();
+
+    await SqlProvider().insertStory(_story);
   }
 }

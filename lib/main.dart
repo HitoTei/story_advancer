@@ -33,7 +33,7 @@ class _Home extends StatelessWidget {
             onPressed: () async => Navigator.of(context).push<dynamic>(
               MaterialPageRoute<dynamic>(
                 builder: (context) {
-                  return EditStoryPage();
+                  return const EditStoryPage();
                 },
               ),
             ),
