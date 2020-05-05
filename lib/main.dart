@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:storyadvancer/pages/edit_story_page.dart';
+import 'package:storyadvancer/pages/titles_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,9 +15,32 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Container(
-        child: const Text('後で作る'),
+      home: _Home(),
+    );
+  }
+}
+
+class _Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('タイトル'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            // ignore: lines_longer_than_80_chars
+            onPressed: () async => Navigator.of(context).push<dynamic>(
+              MaterialPageRoute<dynamic>(
+                builder: (context) {
+                  return EditStoryPage();
+                },
+              ),
+            ),
+          ),
+        ],
       ),
+      body: TitlesPage(),
     );
   }
 }
