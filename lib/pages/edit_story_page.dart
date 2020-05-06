@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/model/story.dart';
 
@@ -14,7 +15,7 @@ class EditStoryPage extends StatefulWidget {
 
 class _EditStoryState extends State<EditStoryPage> {
   _EditStoryState(Story story) : _story = story ?? Story() {
-    List<int> numList = [];
+    var numList = <int>[];
     try {
       for (final str in story.ageOfStory.split('-')) {
         numList.add(int.parse(str));
@@ -27,6 +28,8 @@ class _EditStoryState extends State<EditStoryPage> {
     _day = numList[2];
   }
 
+  bool isEdited = false;
+
   final Story _story;
   int _year = 0;
   int _month = 0;
@@ -35,25 +38,42 @@ class _EditStoryState extends State<EditStoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: save,
+          ),
+        ],
+      ),
       body: Container(
         child: ListView(
           children: <Widget>[
             const Text('タイトル'),
             TextFormField(
               initialValue: _story.title ?? '',
-              onChanged: (val) => _story.title = val,
+              onChanged: (val) {
+                _story.title = val;
+                isEdited = true;
+              },
             ),
             const Text('本文'),
             TextFormField(
               initialValue: _story.content ?? '',
-              onChanged: (val) => _story.content = val,
+              onChanged: (val) {
+                _story.content = val;
+                isEdited = true;
+              },
               keyboardType: TextInputType.multiline,
               maxLines: null,
             ),
             const Text('場所'),
             TextFormField(
               initialValue: _story.location ?? '',
-              onChanged: (val) => _story.location = val,
+              onChanged: (val) {
+                _story.location = val;
+                isEdited = true;
+              },
             ),
             _ageOfStoryWidget(),
           ],
@@ -64,7 +84,7 @@ class _EditStoryState extends State<EditStoryPage> {
 
   @override
   void dispose() {
-    save();
+    if (isEdited) save();
     super.dispose();
   }
 
@@ -74,20 +94,29 @@ class _EditStoryState extends State<EditStoryPage> {
         const Text('年'),
         TextFormField(
           initialValue: _year.toString(),
-          onChanged: (val) => _year = int.parse(val) ?? 0,
+          onChanged: (val) {
+            _year = int.parse(val) ?? 0;
+            isEdited = true;
+          },
           keyboardType: const TextInputType.numberWithOptions(),
         ),
         const Text('月'),
         TextFormField(
           initialValue: _month.toString(),
-          onChanged: (val) => _month = int.parse(val) ?? 0,
+          onChanged: (val) {
+            _month = int.parse(val) ?? 0;
+            isEdited = true;
+          },
           maxLength: 2,
           keyboardType: const TextInputType.numberWithOptions(),
         ),
         const Text('日'),
         TextFormField(
           initialValue: _day.toString(),
-          onChanged: (val) => _day = int.parse(val) ?? 0,
+          onChanged: (val) {
+            _day = int.parse(val) ?? 0;
+            isEdited = true;
+          },
           maxLength: 2,
           keyboardType: const TextInputType.numberWithOptions(),
         ),
@@ -96,11 +125,16 @@ class _EditStoryState extends State<EditStoryPage> {
   }
 
   Future<void> save() async {
+    isEdited = false;
+
     final time = DateTime.now().toString();
     _story.updateTime = time;
     _story.createTime ??= time;
     _story.ageOfStory = '$_year-$_month-$_day';
 
     await SqlProvider().insertStory(_story);
+    Fluttertoast.showToast(
+      msg: '保存しました',
+    );
   }
 }
