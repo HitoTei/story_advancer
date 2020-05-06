@@ -13,12 +13,18 @@ class EditStoryPage extends StatefulWidget {
 }
 
 class _EditStoryState extends State<EditStoryPage> {
-  _EditStoryState(Story story) : _story = story ?? Story();
+  _EditStoryState(Story story) : _story = story ?? Story() {
+    List<int> numList = [];
+    for (final str in story.ageOfStory.split('-')) numList.add(int.parse(str));
+    _year = numList[0];
+    _month = numList[1];
+    _day = numList[2];
+  }
 
   final Story _story;
-  void _setTitle(String title) => _story.title = title;
-  void _setContent(String content) => _story.content = content;
-  void _setLocation(String location) => _story.location = location;
+  int _year = 0;
+  int _month = 0;
+  int _day = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +32,21 @@ class _EditStoryState extends State<EditStoryPage> {
       body: Container(
         child: ListView(
           children: <Widget>[
+            const Text('タイトル'),
             TextField(
-              onChanged: _setTitle,
+              onChanged: (val) => _story.title = val,
             ),
+            const Text('本文'),
             TextField(
-              onChanged: _setContent,
+              onChanged: (val) => _story.content = val,
               keyboardType: TextInputType.multiline,
               maxLines: null,
             ),
+            const Text('場所'),
             TextField(
-              onChanged: _setLocation,
-            )
+              onChanged: (val) => _story.location = val,
+            ),
+            _ageOfStoryWidget(),
           ],
         ),
       ),
@@ -49,9 +59,34 @@ class _EditStoryState extends State<EditStoryPage> {
     super.dispose();
   }
 
+  Widget _ageOfStoryWidget() {
+    return Row(
+      children: <Widget>[
+        const Text('年'),
+        TextField(
+          onChanged: (val) => _year = int.parse(val) ?? 0,
+          keyboardType: const TextInputType.numberWithOptions(),
+        ),
+        const Text('月'),
+        TextField(
+          onChanged: (val) => _month = int.parse(val) ?? 0,
+          maxLength: 2,
+          keyboardType: const TextInputType.numberWithOptions(),
+        ),
+        const Text('日'),
+        TextField(
+          onChanged: (val) => _day = int.parse(val) ?? 0,
+          maxLength: 2,
+          keyboardType: const TextInputType.numberWithOptions(),
+        ),
+      ],
+    );
+  }
+
   Future<void> save() async {
-    _story.updateTime = DateTime.now().toIso8601String();
-    _story.createTime ??= DateTime.now().toIso8601String();
+    _story.updateTime = DateTime.now().toString();
+    _story.createTime ??= DateTime.now().toString();
+    _story.ageOfStory = '$_year-$_month-$_day';
 
     await SqlProvider().insertStory(_story);
   }
