@@ -4,10 +4,14 @@ import 'package:sqflite/sqflite.dart';
 import 'package:storyadvancer/model/story.dart';
 
 class SqlProvider {
-  SqlProvider() {
+  factory SqlProvider() {
+    return _cache ?? SqlProvider._internal();
+  }
+  SqlProvider._internal() {
     _db = initDatabase();
   }
   static const _tableName = 'stories';
+  static SqlProvider _cache;
 
   Future<Database> _db;
   Future<Database> initDatabase() async {
