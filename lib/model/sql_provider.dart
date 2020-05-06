@@ -50,6 +50,26 @@ class SqlProvider {
     );
   }
 
+  Future<String> getContent(Story story) async {
+    final db = await _db;
+    final tmp = await db.query(
+      _tableName,
+      columns: [
+        Story.contentName,
+      ],
+      where: '${Story.idName} = ?',
+      whereArgs: <dynamic>[story.id],
+    );
+
+    Story res;
+    try {
+      res = Story.fromMap(tmp[0]);
+    } catch (e) {
+      return '';
+    }
+    return res.content;
+  }
+
   // contentはnull
   Future<List<Story>> getStoriesWithoutContent() async {
     final db = await _db;

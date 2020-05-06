@@ -58,16 +58,7 @@ class _EditStoryState extends State<EditStoryPage> {
                 isEdited = true;
               },
             ),
-            const Text('本文'),
-            TextFormField(
-              initialValue: _story.content ?? '',
-              onChanged: (val) {
-                _story.content = val;
-                isEdited = true;
-              },
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-            ),
+            _contentWidget(),
             const Text('場所'),
             TextFormField(
               initialValue: _story.location ?? '',
@@ -87,6 +78,34 @@ class _EditStoryState extends State<EditStoryPage> {
   void dispose() {
     if (isEdited) save();
     super.dispose();
+  }
+
+  Widget _contentWidget() {
+    return Column(
+      children: <Widget>[
+        const Text('本文'),
+        FutureBuilder<String>(
+            future: SqlProvider().getContent(_story),
+            builder: (context, snapshot) {
+              if (snapshot.hasError)
+                return Text(
+                  'エラー;${snapshot.error}',
+                );
+              if (!snapshot.hasData) return const CircularProgressIndicator();
+
+              _story.content = snapshot.data;
+              return TextFormField(
+                initialValue: _story.content ?? '',
+                onChanged: (val) {
+                  _story.content = val;
+                  isEdited = true;
+                },
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+              );
+            }),
+      ],
+    );
   }
 
   Widget _ageOfStoryWidget() {
