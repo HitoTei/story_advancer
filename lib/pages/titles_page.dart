@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/model/story.dart';
 import 'package:storyadvancer/pages/edit_story_page.dart';
 import 'package:storyadvancer/pages/show_story_content_page.dart';
@@ -7,8 +8,11 @@ String _condition = Story.createTimeName; // なにでソートするか
 bool _isAce = true; // 昇順かどうか
 
 class TitlesPage extends StatelessWidget {
-  const TitlesPage(Future<List<Story>> future) : _future = future;
+  const TitlesPage(Future<List<Story>> future, void Function() refresh)
+      : _future = future,
+        _refresh = refresh;
   final Future<List<Story>> _future;
+  final void Function() _refresh;
 
   @override
   Widget build(BuildContext context) {
@@ -21,31 +25,16 @@ class TitlesPage extends StatelessWidget {
             if (!snapshot.hasData) return const CircularProgressIndicator();
             if (snapshot.hasError) return Text('エラーが発生しました: ${snapshot.error}');
 
-            final navigator = TitlesPageNavigator();
             final stories = snapshot.data;
             sortStories(stories);
+
             return Column(
               children: <Widget>[
                 for (var story in stories)
                   Column(
                     children: <Widget>[
-                      FlatButton(
-                        child: Column(children: [
-                          Text(
-                            'title:${story.title ?? '無題'}',
-                          ),
-                          Text(
-                            '作成日時: ${story.createTime}',
-                          ),
-                          Text(
-                            '更新日時: ${story.updateTime}',
-                          ),
-                          Text('作品内時間 :${story.processedAgeOfStory()}'),
-                        ]),
-                        onPressed: () => navigator.showStory(story, context),
-                        onLongPress: () => navigator.editStory(story, context),
-                      ),
                       const Divider(),
+                      _titleWidget(story, context),
                     ],
                   ),
               ],
@@ -53,6 +42,76 @@ class TitlesPage extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  Widget _titleWidget(Story story, BuildContext context) {
+    return FlatButton(
+      child: Column(children: [
+        Text(
+          'title:${story.title ?? '無題'}',
+        ),
+        Text(
+          '作成日時: ${story.createTime}',
+        ),
+        Text(
+          '更新日時: ${story.updateTime}',
+        ),
+        Text(
+          '作内時間 :${story.processedAgeOfStory()}',
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            titleOperations(context, story),
+          ],
+        )
+      ]),
+      onPressed: () => TitlesPageNavigator().showStory(story, context),
+      onLongPress: () => TitlesPageNavigator().editStory(story, context),
+    );
+  }
+
+  Widget titleOperations(BuildContext context, Story story) {
+    return IconButton(
+      icon: Icon(Icons.more_vert),
+      onPressed: () async => await showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            children: <Widget>[
+              FlatButton(
+                onPressed: () async => await showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('本当に削除しますか？'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: const Text('Yes'),
+                            onPressed: () {
+                              SqlProvider().deleteStory(story);
+                              _refresh();
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          FlatButton(
+                            child: const Text('No'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    }),
+                child: const Text('削除'),
+              )
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -112,9 +171,9 @@ class _SortConditionState extends State<SortConditionWidget> {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        radioTile(Story.createTimeName),
-        radioTile(Story.updateTimeName),
-        radioTile(Story.ageOfStoryName),
+        radioTile('作成時間', Story.createTimeName),
+        radioTile('更新時間', Story.updateTimeName),
+        radioTile('作内時間', Story.ageOfStoryName),
         Column(children: [
           Text(_isAce ? '昇順' : '降順'),
           Switch(
@@ -126,18 +185,16 @@ class _SortConditionState extends State<SortConditionWidget> {
     );
   }
 
-  Widget radioTile(String value) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Text(value),
-          Radio(
-            value: value,
-            groupValue: _condition,
-            onChanged: (String val) => setState(() => _condition = val),
-          ),
-        ],
-      ),
+  Widget radioTile(String title, String value) {
+    return Column(
+      children: <Widget>[
+        Text(title),
+        Radio(
+          value: value,
+          groupValue: _condition,
+          onChanged: (String val) => setState(() => _condition = val),
+        ),
+      ],
     );
   }
 }

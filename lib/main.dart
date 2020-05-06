@@ -46,9 +46,7 @@ class HomeState extends State<Home> {
           )
         ],
       ),
-      body: TitlesPage(
-        _future,
-      ),
+      body: TitlesPage(_future, this.refresh),
     );
   }
 
@@ -59,7 +57,9 @@ class HomeState extends State<Home> {
           },
         ),
       );
-  void refresh() => setState(() {
-        _future = SqlProvider().getStoriesWithoutContent();
-      });
+  void refresh() {
+    setState(() {
+      _future = SqlProvider().getStoriesWithoutContent();
+    });
+  }
 }
