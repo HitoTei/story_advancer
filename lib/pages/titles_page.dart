@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/model/story.dart';
 import 'package:storyadvancer/pages/edit_story_page.dart';
 import 'package:storyadvancer/pages/show_story_content_page.dart';
 
 class TitlesPage extends StatelessWidget {
+  const TitlesPage(Future<List<Story>> future) : _future = future;
+  final Future<List<Story>> _future;
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: FutureBuilder<List<Story>>(
-        future: SqlProvider().getStoriesWithoutContent(),
+        future: _future,
         builder: (BuildContext context, AsyncSnapshot<List<Story>> snapshot) {
           if (!snapshot.hasData) return const CircularProgressIndicator();
           if (snapshot.hasError) return Text('エラーが発生しました: ${snapshot.error}');

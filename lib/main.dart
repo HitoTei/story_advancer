@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/pages/edit_story_page.dart';
 import 'package:storyadvancer/pages/titles_page.dart';
+
+import 'model/story.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,32 +18,48 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: _Home(),
+      home: Home(),
     );
   }
 }
 
-class _Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return HomeState();
+  }
+}
+
+class HomeState extends State<Home> {
+  Future<List<Story>> _future = SqlProvider().getStoriesWithoutContent();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('タイトル'),
         actions: <Widget>[
+          IconButton(icon: Icon(Icons.add), onPressed: editStoryPage),
           IconButton(
-            icon: Icon(Icons.add),
-            // ignore: lines_longer_than_80_chars
-            onPressed: () async => Navigator.of(context).push<dynamic>(
-              MaterialPageRoute<dynamic>(
-                builder: (context) {
-                  return const EditStoryPage();
-                },
-              ),
-            ),
-          ),
+            icon: const Icon(Icons.refresh),
+            onPressed: refresh,
+          )
         ],
       ),
-      body: TitlesPage(),
+      body: TitlesPage(
+        _future,
+      ),
     );
   }
+
+  Future<void> editStoryPage() async => Navigator.of(context).push<dynamic>(
+        MaterialPageRoute<dynamic>(
+          builder: (context) {
+            return const EditStoryPage();
+          },
+        ),
+      );
+  void refresh() => setState(() {
+        _future = SqlProvider().getStoriesWithoutContent();
+      });
 }
