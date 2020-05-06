@@ -75,13 +75,13 @@ class TitlesPage extends StatelessWidget {
   Widget titleOperations(BuildContext context, Story story) {
     return IconButton(
       icon: Icon(Icons.more_vert),
-      onPressed: () async => await showDialog(
+      onPressed: () async => showDialog<SimpleDialog>(
         context: context,
         builder: (context) {
           return SimpleDialog(
             children: <Widget>[
               FlatButton(
-                onPressed: () async => await showDialog(
+                onPressed: () async => showDialog<AlertDialog>(
                     context: context,
                     builder: (context) {
                       return AlertDialog(

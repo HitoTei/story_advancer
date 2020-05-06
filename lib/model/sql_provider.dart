@@ -4,10 +4,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:storyadvancer/model/story.dart';
 
 class SqlProvider {
-  static const _tableName = 'stories';
   SqlProvider() {
     _db = initDatabase();
   }
+  static const _tableName = 'stories';
 
   Future<Database> _db;
   Future<Database> initDatabase() async {
@@ -66,7 +66,7 @@ class SqlProvider {
 
       res = Story.fromMap(tmp[0]);
       return res.content;
-    } catch (e) {
+    } on Exception {
       return '';
     }
   }

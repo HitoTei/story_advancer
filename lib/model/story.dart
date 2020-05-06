@@ -52,7 +52,7 @@ class Story {
       for (final str in ageOfStory.split('-')) {
         numList.add(int.parse(str));
       }
-    } catch (e) {
+    } on Exception {
       numList = [0, 0, 0];
     }
     return '${numList[0]}年${numList[1]}月${numList[2]}日';
