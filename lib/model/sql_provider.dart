@@ -52,22 +52,23 @@ class SqlProvider {
 
   Future<String> getContent(Story story) async {
     final db = await _db;
-    final tmp = await db.query(
-      _tableName,
-      columns: [
-        Story.contentName,
-      ],
-      where: '${Story.idName} = ?',
-      whereArgs: <dynamic>[story.id],
-    );
-
-    Story res;
     try {
+      final tmp = await db.query(
+        _tableName,
+        columns: [
+          Story.contentName,
+        ],
+        where: '${Story.idName} = ?',
+        whereArgs: <dynamic>[story.id],
+      );
+
+      Story res;
+
       res = Story.fromMap(tmp[0]);
+      return res.content;
     } catch (e) {
       return '';
     }
-    return res.content;
   }
 
   // contentはnull
