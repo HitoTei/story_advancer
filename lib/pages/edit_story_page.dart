@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/model/story.dart';
@@ -94,6 +95,9 @@ class _EditStoryState extends State<EditStoryPage> {
         const Text('年'),
         TextFormField(
           initialValue: _year.toString(),
+          inputFormatters: [
+            WhitelistingTextInputFormatter.digitsOnly,
+          ],
           onChanged: (val) {
             _year = int.parse(val) ?? 0;
             isEdited = true;
@@ -103,6 +107,9 @@ class _EditStoryState extends State<EditStoryPage> {
         const Text('月'),
         TextFormField(
           initialValue: _month.toString(),
+          inputFormatters: [
+            WhitelistingTextInputFormatter.digitsOnly,
+          ],
           onChanged: (val) {
             _month = int.parse(val) ?? 0;
             isEdited = true;
@@ -113,6 +120,9 @@ class _EditStoryState extends State<EditStoryPage> {
         const Text('日'),
         TextFormField(
           initialValue: _day.toString(),
+          inputFormatters: [
+            WhitelistingTextInputFormatter.digitsOnly,
+          ],
           onChanged: (val) {
             _day = int.parse(val) ?? 0;
             isEdited = true;
