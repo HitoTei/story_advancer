@@ -45,4 +45,16 @@ class Story {
     };
     return res;
   }
+
+  String processedAgeOfStory() {
+    var numList = <int>[];
+    try {
+      for (final str in ageOfStory.split('-')) {
+        numList.add(int.parse(str));
+      }
+    } catch (e) {
+      numList = [0, 0, 0];
+    }
+    return '${numList[0]}年${numList[1]}月${numList[2]}日';
+  }
 }

@@ -27,21 +27,26 @@ class TitlesPage extends StatelessWidget {
             return Column(
               children: <Widget>[
                 for (var story in stories)
-                  FlatButton(
-                    child: Column(children: [
-                      Text(
-                        'title:${story.title ?? '無題'}',
+                  Column(
+                    children: <Widget>[
+                      FlatButton(
+                        child: Column(children: [
+                          Text(
+                            'title:${story.title ?? '無題'}',
+                          ),
+                          Text(
+                            '作成日時: ${story.createTime}',
+                          ),
+                          Text(
+                            '更新日時: ${story.updateTime}',
+                          ),
+                          Text('作品内時間 :${story.processedAgeOfStory()}'),
+                        ]),
+                        onPressed: () => navigator.showStory(story, context),
+                        onLongPress: () => navigator.editStory(story, context),
                       ),
-                      Text(
-                        '作成日時: ${story.createTime}',
-                      ),
-                      Text(
-                        '更新日時: ${story.updateTime}',
-                      ),
-                      Text('id :${story.id}'),
-                    ]),
-                    onPressed: () => navigator.showStory(story, context),
-                    onLongPress: () => navigator.editStory(story, context),
+                      const Divider(),
+                    ],
                   ),
               ],
             );
