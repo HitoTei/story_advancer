@@ -1,9 +1,9 @@
 class Story {
   Story({
-    this.id = -1,
+    this.id = null,
     this.title = '',
-    this.updateTime = '',
-    this.createTime = '',
+    this.updateTime = null,
+    this.createTime = null,
     this.ageOfStory = '0',
     this.content = '',
     this.location = '',

@@ -11,12 +11,12 @@ class ShowStoryContentPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _story.title,
+          _story.title ?? '',
         ),
       ),
       body: SingleChildScrollView(
         child: Text(
-          _story.content,
+          _story.content ?? '',
         ),
       ),
     );

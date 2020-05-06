@@ -7,30 +7,38 @@ import 'package:storyadvancer/pages/show_story_content_page.dart';
 class TitlesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Story>>(
-      future: SqlProvider().getStoriesWithoutContent(),
-      builder: (BuildContext context, AsyncSnapshot<List<Story>> snapshot) {
-        if (!snapshot.hasData) return const CircularProgressIndicator();
-        if (snapshot.hasError) return Text('エラーが発生しました: ${snapshot.error}');
+    return SingleChildScrollView(
+      child: FutureBuilder<List<Story>>(
+        future: SqlProvider().getStoriesWithoutContent(),
+        builder: (BuildContext context, AsyncSnapshot<List<Story>> snapshot) {
+          if (!snapshot.hasData) return const CircularProgressIndicator();
+          if (snapshot.hasError) return Text('エラーが発生しました: ${snapshot.error}');
 
-        final navigator = TitlesPageNavigator();
+          final navigator = TitlesPageNavigator();
 
-        return Column(
-          children: <Widget>[
-            for (var story in snapshot.data)
-              FlatButton(
-                child: Column(children: [
-                  Text('title:${story.title ?? '無題'}'),
-                  Text('作成日時: ${story.createTime}'),
-                  Text('更新日時: ${story.updateTime}'),
-                  Text('id :${story.id}'),
-                ]),
-                onPressed: () => navigator.showStory(story, context),
-                onLongPress: () => navigator.editStory(story, context),
-              ),
-          ],
-        );
-      },
+          return Column(
+            children: <Widget>[
+              for (var story in snapshot.data)
+                FlatButton(
+                  child: Column(children: [
+                    Text(
+                      'title:${story.title ?? '無題'}',
+                    ),
+                    Text(
+                      '作成日時: ${story.createTime}',
+                    ),
+                    Text(
+                      '更新日時: ${story.updateTime}',
+                    ),
+                    Text('id :${story.id}'),
+                  ]),
+                  onPressed: () => navigator.showStory(story, context),
+                  onLongPress: () => navigator.editStory(story, context),
+                ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
