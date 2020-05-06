@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/pages/edit_story_page.dart';
 import 'package:storyadvancer/pages/titles_page.dart';
-
+import 'package:storyadvancer/model/page_navigator.dart';
 import 'model/story.dart';
 
 void main() {
@@ -39,7 +39,9 @@ class HomeState extends State<Home> {
       appBar: AppBar(
         title: const Text('タイトル'),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.add), onPressed: editStoryPage),
+          IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () => PageNavigator().editStory(null, context)),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: refresh,
@@ -50,8 +52,8 @@ class HomeState extends State<Home> {
     );
   }
 
-  Future<void> editStoryPage() async => Navigator.of(context).push<dynamic>(
-        MaterialPageRoute<dynamic>(
+  Future<void> editStoryPage() async => Navigator.of(context).push(
+        MaterialPageRoute(
           builder: (context) {
             return const EditStoryPage();
           },

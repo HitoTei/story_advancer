@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:storyadvancer/model/sql_provider.dart';
 import 'package:storyadvancer/model/story.dart';
-import 'package:storyadvancer/pages/edit_story_page.dart';
-import 'package:storyadvancer/pages/show_story_content_page.dart';
+import 'package:storyadvancer/model/page_navigator.dart';
 
 String _condition = Story.createTimeName; // なにでソートするか
 bool _isAce = true; // 昇順かどうか
@@ -67,8 +66,8 @@ class TitlesPage extends StatelessWidget {
           ],
         )
       ]),
-      onPressed: () => TitlesPageNavigator().showStory(story, context),
-      onLongPress: () => TitlesPageNavigator().editStory(story, context),
+      onPressed: () => PageNavigator().showStory(story, context),
+      onLongPress: () => PageNavigator().editStory(story, context),
     );
   }
 
@@ -130,32 +129,6 @@ class TitlesPage extends StatelessWidget {
             s1.ageOfStory.compareTo(s2.ageOfStory) * (_isAce ? 1 : -1));
         break;
     }
-  }
-}
-
-class TitlesPageNavigator {
-  Future<void> editStory(Story story, BuildContext context) async {
-    return Navigator.of(context).push<EditStoryPage>(
-      MaterialPageRoute(
-        builder: (context) {
-          return EditStoryPage(
-            story: story,
-          );
-        },
-      ),
-    );
-  }
-
-  Future<void> showStory(Story story, BuildContext context) async {
-    return Navigator.of(context).push<EditStoryPage>(
-      MaterialPageRoute(
-        builder: (context) {
-          return ShowStoryContentPage(
-            story,
-          );
-        },
-      ),
-    );
   }
 }
 
