@@ -33,6 +33,9 @@ class ShowStoryContentPage extends StatelessWidget {
         return SingleChildScrollView(
           child: Text(
             _story.content,
+            style: const TextStyle(
+              fontSize: 18,
+            ),
           ),
         );
       },

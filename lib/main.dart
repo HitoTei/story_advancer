@@ -48,10 +48,6 @@ class HomeState extends State<Home> {
             onPressed: () => _navigator.editStory(null, context),
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: refresh,
-          ),
-          IconButton(
             icon: const Icon(Icons.sort),
             onPressed: () async {
               await showDialog<SimpleDialog>(
