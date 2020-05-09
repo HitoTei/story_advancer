@@ -22,13 +22,14 @@ class _EditStoryState extends State<EditStoryPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        final pop = !_store.isEdited;
         if (_store.isEdited) {
           Navigator.pop(
             context,
             _store.save(),
           );
         }
-        return Future.value(false);
+        return Future.value(pop);
       },
       child: Scaffold(
         appBar: AppBar(
