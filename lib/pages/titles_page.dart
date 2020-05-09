@@ -7,17 +7,18 @@ String _condition = Story.createTimeName; // なにでソートするか
 bool _isAce = true; // 昇順かどうか
 
 class TitlesPage extends StatelessWidget {
-  const TitlesPage(Future<List<Story>> future, void Function() refresh)
+  const TitlesPage(Future<List<Story>> future, void Function() refresh,
+      PageNavigator navigator)
       : _future = future,
-        _refresh = refresh;
+        _refresh = refresh,
+        _navigator = navigator;
   final Future<List<Story>> _future;
   final void Function() _refresh;
-
+  final PageNavigator _navigator;
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        SortConditionWidget(),
         FutureBuilder<List<Story>>(
           future: _future,
           builder: (BuildContext context, AsyncSnapshot<List<Story>> snapshot) {
@@ -46,34 +47,69 @@ class TitlesPage extends StatelessWidget {
 
   Widget _titleWidget(Story story, BuildContext context) {
     return FlatButton(
-      child: Column(children: [
-        Text(
-          'title:${story.title ?? '無題'}',
-        ),
-        Text(
-          '作成日時: ${story.createTime}',
-        ),
-        Text(
-          '更新日時: ${story.updateTime}',
-        ),
-        Text(
-          '作内時間 :${story.processedAgeOfStory()}',
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            titleOperations(context, story),
-          ],
-        )
-      ]),
-      onPressed: () => PageNavigator().showStory(story, context),
-      onLongPress: () => PageNavigator().editStory(story, context),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${story.title ?? '無題'}',
+                    style: const TextStyle(
+                      fontSize: 35,
+                    ),
+                  ),
+                  Text(
+                    '${story.processedAgeOfStory()}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    '場所: ${story.location}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '作成日時: ${story.createTime}',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  Text(
+                    '更新日時: ${story.updateTime}',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+              titleOperations(context, story),
+            ],
+          ),
+        ],
+      ),
+      onPressed: () => _navigator.showStory(story, context),
+      onLongPress: () async {
+        await _navigator.editStory(story, context);
+        _refresh();
+      },
     );
   }
 
   Widget titleOperations(BuildContext context, Story story) {
     return IconButton(
-      icon: Icon(Icons.more_vert),
+      icon: const Icon(Icons.more_vert),
       onPressed: () async => showDialog<SimpleDialog>(
         context: context,
         builder: (context) {
@@ -147,27 +183,33 @@ class _SortConditionState extends State<SortConditionWidget> {
         radioTile('作成時間', Story.createTimeName),
         radioTile('更新時間', Story.updateTimeName),
         radioTile('作内時間', Story.ageOfStoryName),
-        Column(children: [
-          Text(_isAce ? '昇順' : '降順'),
-          Switch(
-            value: _isAce,
-            onChanged: (bool val) => setState(() => _isAce = val),
+        Expanded(
+          child: Column(
+            children: [
+              Text(_isAce ? '昇順' : '降順'),
+              Switch(
+                value: _isAce,
+                onChanged: (bool val) => setState(() => _isAce = val),
+              ),
+            ],
           ),
-        ])
+        )
       ],
     );
   }
 
   Widget radioTile(String title, String value) {
-    return Column(
-      children: <Widget>[
-        Text(title),
-        Radio(
-          value: value,
-          groupValue: _condition,
-          onChanged: (String val) => setState(() => _condition = val),
-        ),
-      ],
+    return Expanded(
+      child: Column(
+        children: <Widget>[
+          Text(title),
+          Radio(
+            value: value,
+            groupValue: _condition,
+            onChanged: (String val) => setState(() => _condition = val),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -38,7 +38,7 @@ class SqlProvider {
   Future<void> insertStory(Story story) async {
     final db = await _db;
 
-    db.insert(
+    return db.insert(
       _tableName,
       story.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,

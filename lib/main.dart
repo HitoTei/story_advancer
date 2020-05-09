@@ -31,24 +31,47 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+  HomeState();
   Future<List<Story>> _future = SqlProvider().getStoriesWithoutContent();
+  PageNavigator _navigator;
 
   @override
   Widget build(BuildContext context) {
+    _navigator = PageNavigator(refresh);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('タイトル'),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => PageNavigator().editStory(null, context)),
+            icon: Icon(Icons.add),
+            onPressed: () => _navigator.editStory(null, context),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: refresh,
+          ),
+          IconButton(
+            icon: const Icon(Icons.sort),
+            onPressed: () async {
+              await showDialog<SimpleDialog>(
+                context: context,
+                builder: (_) {
+                  return SimpleDialog(
+                    contentPadding: const EdgeInsets.all(20),
+                    title: const Text('並び順'),
+                    children: [
+                      SortConditionWidget(),
+                    ],
+                  );
+                },
+              );
+              refresh();
+            },
           )
         ],
       ),
-      body: TitlesPage(_future, this.refresh),
+      body: TitlesPage(_future, refresh, _navigator),
     );
   }
 
